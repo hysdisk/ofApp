@@ -7,10 +7,13 @@ public:
 
     Donuts()
     {
-
+        enddeg = 0;
     }
 
-    ~Donuts(){}
+    ~Donuts(){
+        cout << "erase donuts" << endl;
+
+    }
 
     void setup(ofPoint pos_,float startdeg_,float enddeg_,float r_outcircle_,float r_donuts_)
     {
@@ -75,7 +78,7 @@ private:
 
 //=============================================================================
 
-vector <Donuts> donuties;
+vector <Donuts *> donuties;
 float degstep;
 
 //=============================================================================
@@ -97,12 +100,14 @@ void ofApp::update(){
 
     for (int i = 0; i < donuts_size; i++)
     {
-        donuties[i].update_deg(0,degstep);
+        donuties[i]->update_deg(0,degstep);
 
-        if (donuties[i].get_deg() >= 360)
+        if (donuties[i]->get_deg() >= 360)
         {
+            delete donuties[i];
             donuts_size--;
             donuties.erase(donuties.begin()+i);
+
         }
     }
 }
@@ -112,7 +117,7 @@ void ofApp::draw(){
 
     for (int i = 0; i < donuties.size(); i++)
     {
-        donuties[i].draw();
+        donuties[i]->draw();
     }
 
     ofDrawBitmapString(ofToString(donuties.size()),20,20);
@@ -146,18 +151,18 @@ void ofApp::mouseMoved(int x, int y ){
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
 
-    Donuts donuts;
+    Donuts *donuts = new Donuts;
     ofPoint pos_(x,y);
-    donuts.setup(pos_,0,0,50,40);
+    donuts->setup(pos_,0,0,50,40);
     donuties.push_back(donuts);  
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
 
-    Donuts donuts;
+    Donuts *donuts = new Donuts;
     ofPoint pos_(x,y);
-    donuts.setup(pos_,0,0,50,40);
+    donuts->setup(pos_,0,0,50,40);
     donuties.push_back(donuts);    
 }
 
