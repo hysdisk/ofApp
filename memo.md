@@ -28,3 +28,9 @@ ofpath
 * 描画が遅い
 * 描画レートが早くなる？とポリゴン欠けが発生する時がある。
 
+ofMesh
+------
+### 描画モード
+![primitives_new.gif (GIF 画像, 870x367 px)](http://www.creativeapplications.net/wp-content/uploads/2011/03/primitives_new.gif "primitives_new.gif (GIF 画像, 870x367 px)")
+
+### 円弧を描きたい
