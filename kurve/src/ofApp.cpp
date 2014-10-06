@@ -4,8 +4,7 @@ int part_count;
 
 
 
-ofColor kurveColor[8];
-ofEasyCam cam;
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -34,7 +33,7 @@ void ofApp::setup(){
 void ofApp::update(){
 }
 
-void draw_kurve_2(){
+void ofApp::draw_kurve_2(){
     ofMesh mesh;
     mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
     
@@ -90,7 +89,7 @@ void draw_kurve_2(){
 
 
 
-void draw_kurve_1(){
+void ofApp::draw_kurve_1(){
     ofMesh mesh;
     
     mesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
