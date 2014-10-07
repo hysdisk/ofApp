@@ -1,13 +1,24 @@
 #include "ofApp.h"
 
 int end_deg;
+int circle_steps;
+ofColor kurveColor[9];
 
 //--------------------------------------------------------------
 void ofApp::setup(){
 
     ofBackground(ofColor::black);
     end_deg = 180;
+    kurveColor[1] = ofColor(33,34,39);
+    kurveColor[2] = ofColor(48,45,72);
+    kurveColor[3] = ofColor(46,41,61);
+    kurveColor[4] = ofColor(61,44,78);
+    kurveColor[5] = ofColor(127,49,39);
+    kurveColor[6] = ofColor(142,49,34);
+    kurveColor[7] = ofColor(165,61,36);
+    kurveColor[8] = ofColor(193,106,63);
 
+    circle_steps = 3;
 
 }
 
@@ -46,43 +57,46 @@ void ofApp::draw(){
 
     glPointSize(3.0);
 
-    for (int icount = 1; icount <= 7; icount++)
+    for (int icount = 1; icount <= 8; icount++)
     {
-        for (int ir = 0; ir <= end_deg; ir++)
+        for (int ir = 0; ir <= end_deg / circle_steps; ir++)
         {
             _rad = r_radius + (r_width * icount);
-            posx = _rad * cos(ofDegToRad(ir));
-            posy = _rad * sin(ofDegToRad(ir));
+            posx = _rad * cos(ofDegToRad(ir*circle_steps));
+            posy = _rad * sin(ofDegToRad(ir*circle_steps));
 
             pos_in.set(posx,posy,0);
+            mesh.addColor(kurveColor[icount]);
             mesh.addVertex(pos_in);
 
             _rad+=r_width;
-            posx = _rad * cos(ofDegToRad(ir));
-            posy = _rad * sin(ofDegToRad(ir));
+            posx = _rad * cos(ofDegToRad(ir*circle_steps));
+            posy = _rad * sin(ofDegToRad(ir*circle_steps));
 
             pos_out.set(posx,posy,0);
+            mesh.addColor(kurveColor[icount]);
             mesh.addVertex(pos_out);
 
-            r_deg = ir;
+            r_deg = ir*circle_steps;
 
         }
         mesh.draw();
         mesh.clear();
 
-        _rad = (r_radius + r_width * 10);
+        _rad = (r_radius + r_width * 11);
         posx = _rad * cos(ofDegToRad(r_deg));
         posy = _rad * sin(ofDegToRad(r_deg));
         r_pos.set(posx,posy);
 
-        mesh.addVertex(ofVec3f(0,0,0));
-        for (int ir = r_deg-180; ir >= (r_deg * -1); ir--)
+        for (int ir = r_deg-180; ir >= -r_deg; ir--)
         {
-            _rad = r_radius + ((icount - 8)* -1) * r_width;
+            //
+            _rad = r_radius + (-(icount - 9)) * r_width;
             posx = _rad * cos(ofDegToRad(ir));
             posy = _rad * sin(ofDegToRad(ir));
 
             pos_in.set(posx,posy,0);
+            mesh.addColor(kurveColor[icount]);
             mesh.addVertex(pos_in);
 
             _rad+=r_width;
@@ -90,6 +104,7 @@ void ofApp::draw(){
             posy = _rad * sin(ofDegToRad(ir));
 
             pos_out.set(posx,posy,0);
+            mesh.addColor(kurveColor[icount]);
             mesh.addVertex(pos_out);
         }
 
@@ -99,9 +114,7 @@ void ofApp::draw(){
         mesh.clear();
         ofPopMatrix();
     }
-
-
-
+    
 }
 
 //--------------------------------------------------------------
