@@ -22,7 +22,7 @@ public:
             //kurveMesh[i].setMode(OF_PRIMITIVE_POINTS);
         }
 
-        kurveWidth = 30;
+        kurveWidth = 50;
         position.set(ofGetWidth()/2,ofGetHeight()/2,0);
     }
 
@@ -38,7 +38,12 @@ public:
 
     enum Arrow{UP,RIGHT,DOWN,LEFT};
 
+    //
+    //
+    //
     void draw_Straight(int step_,int distance_,int arrow_){
+
+//        ofCircle(0,0, 5);
 
         ofVec3f location_;
 
@@ -70,7 +75,12 @@ public:
 
     }
 
+    //
+    //
+    //
     void draw_u(int step_,int startdeg_, int enddeg_){
+        
+//        ofCircle(0,0, 5);
 
         ofVec3f location_;
 
@@ -78,9 +88,8 @@ public:
 
         for (int ideg = startdeg_ / step_; ideg <= enddeg_ / step_; ideg++)
         {
-            for (int ipart = 1; ipart < 8; ipart++)
+            for (int ipart = 1; ipart <= 8; ipart++)
             {
-
                 //内径位置セット
                 location_.set(
                     ipart * kurveWidth * cos(ofDegToRad(ideg * step_)),
@@ -98,23 +107,34 @@ public:
             }            
         }
 
-        for (int i = 1 ; i < 8; i++)
+        kurveMesh[1].draw();
+        kurveMesh[2].draw();
+        kurveMesh[3].draw();
+        kurveMesh[4].draw();
+        kurveMesh[5].draw();
+        kurveMesh[6].draw();
+        kurveMesh[7].draw();
+        kurveMesh[8].draw();
+        for (int i = 1 ; i <= 8; i++)
         {
-            kurveMesh[i].draw();
             kurveMesh[i].clear();
-
+            
         }
+        
+        
 
     }
 
     void draw_n(int step_,int startdeg_, int enddeg_){
+
+//        ofCircle(0,0, 5);
 
         ofVec3f location_;
 
         // 0 to -180を想定
         for (int ideg = startdeg_ / step_; ideg >= enddeg_ / step_; ideg--)
         {
-            for (int ipart = 1; ipart < 8; ipart++)
+            for (int ipart = 1; ipart <= 8; ipart++)
             {
 
                 //内径位置セット
@@ -122,23 +142,30 @@ public:
                     ipart * kurveWidth * cos(ofDegToRad(ideg * step_)),
                     ipart * kurveWidth * sin(ofDegToRad(ideg * step_)),0);
 
-                kurveMesh[ipart].addColor(kurveColor[-(ipart-8)]);
+                kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
                 kurveMesh[ipart].addVertex(location_);
 
                 //外径位置セット
                 location_.set(
                     (kurveWidth + (ipart * kurveWidth)) * cos(ofDegToRad(ideg * step_)),
                     (kurveWidth + (ipart * kurveWidth)) * sin(ofDegToRad(ideg * step_)),0);
-                kurveMesh[ipart].addColor(kurveColor[-(ipart-8)]);
+                kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
                 kurveMesh[ipart].addVertex(location_);
             }            
         }
 
-        for (int i = 1 ; i < 8; i++)
+        kurveMesh[1].draw();
+        kurveMesh[2].draw();
+        kurveMesh[3].draw();
+        kurveMesh[4].draw();
+        kurveMesh[5].draw();
+        kurveMesh[6].draw();
+        kurveMesh[7].draw();
+        kurveMesh[8].draw();
+        for (int i = 1 ; i <= 8; i++)
         {
-            kurveMesh[i].draw();
             kurveMesh[i].clear();
-
+            
         }
 
     }
@@ -151,7 +178,7 @@ ofEasyCam cam;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    ofBackground(ofColor::black);
+    ofBackground(ofColor(61,44,78));
     glPointSize(3.0);
 
     kurve = new Kurve;
@@ -168,25 +195,30 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-    //cam.begin();
+//    cam.begin();
 
     ofPushMatrix();
 
-    ofTranslate(700,80,0);
-    kurve->draw_Straight(5,100,2);
 
-    ofTranslate(0,100,0);
-    kurve->draw_u(5,0,180);
+    ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 
-    ofTranslate(-270,0,0);
-    kurve->draw_n(5,0,-180);
+    kurve->draw_u(2,0,180);
 
-    ofTranslate(-270,0,0);
-    kurve->draw_Straight(5,500,2);
+    ofTranslate(500,0,0);
+    kurve->draw_n(2,0,-180);
 
+    ofTranslate(500,0,0);
+    kurve->draw_u(2,0,180);
+    
+    ofTranslate(-1500,0,0);
+    kurve->draw_n(2,0,-180);
+
+    ofTranslate(-500,0,0);
+    kurve->draw_u(2,0,180);
+    
     ofPopMatrix();
 
-    //cam.end();
+//    cam.end();
 
 }
 
