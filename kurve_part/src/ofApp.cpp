@@ -74,6 +74,8 @@ public:
 
         ofVec3f location_;
 
+        //TODO : 回転方向判断
+
         for (int ideg = startdeg_ / step_; ideg <= enddeg_ / step_; ideg++)
         {
             for (int ipart = 1; ipart < 8; ipart++)
@@ -105,11 +107,46 @@ public:
 
     }
 
+    void draw_n(int step_,int startdeg_, int enddeg_){
 
+        ofVec3f location_;
+
+        // 0 to -180を想定
+        for (int ideg = startdeg_ / step_; ideg >= enddeg_ / step_; ideg--)
+        {
+            for (int ipart = 1; ipart < 8; ipart++)
+            {
+
+                //内径位置セット
+                location_.set(
+                    ipart * kurveWidth * cos(ofDegToRad(ideg * step_)),
+                    ipart * kurveWidth * sin(ofDegToRad(ideg * step_)),0);
+
+                kurveMesh[ipart].addColor(kurveColor[-(ipart-8)]);
+                kurveMesh[ipart].addVertex(location_);
+
+                //外径位置セット
+                location_.set(
+                    (kurveWidth + (ipart * kurveWidth)) * cos(ofDegToRad(ideg * step_)),
+                    (kurveWidth + (ipart * kurveWidth)) * sin(ofDegToRad(ideg * step_)),0);
+                kurveMesh[ipart].addColor(kurveColor[-(ipart-8)]);
+                kurveMesh[ipart].addVertex(location_);
+            }            
+        }
+
+        for (int i = 1 ; i < 8; i++)
+        {
+            kurveMesh[i].draw();
+            kurveMesh[i].clear();
+
+        }
+
+    }
 
 };
 
 Kurve *kurve;
+ofEasyCam cam;
 
 
 //--------------------------------------------------------------
@@ -131,15 +168,25 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
+    //cam.begin();
+
     ofPushMatrix();
 
-    ofTranslate(ofGetWidth()/2,0,0);
+    ofTranslate(700,80,0);
     kurve->draw_Straight(5,100,2);
 
     ofTranslate(0,100,0);
     kurve->draw_u(5,0,180);
 
+    ofTranslate(-270,0,0);
+    kurve->draw_n(5,0,-180);
+
+    ofTranslate(-270,0,0);
+    kurve->draw_Straight(5,500,2);
+
     ofPopMatrix();
+
+    //cam.end();
 
 }
 
