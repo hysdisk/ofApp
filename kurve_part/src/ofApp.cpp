@@ -1,7 +1,5 @@
 #include "ofApp.h"
 
-
-
 class Kurve {
 
 public:
@@ -29,6 +27,8 @@ public:
     ~Kurve(){
     }
 
+    // ---------------------------------------------------
+
     ofColor kurveColor[9];
     ofMesh  kurveMesh[9];
     ofVec3f position;
@@ -38,10 +38,8 @@ public:
 
     enum Arrow{UP,RIGHT,DOWN,LEFT};
 
-    //
-    //
-    //
-    void draw_Straight(int step_,int distance_,int arrow_){
+   // ---------------------------------------------------
+     void draw_Straight(int step_,int distance_,int arrow_){
 
 //        ofCircle(0,0, 5);
 
@@ -69,15 +67,10 @@ public:
         {
             kurveMesh[i].draw();
             kurveMesh[i].clear();
-
         }
-
-
     }
 
-    //
-    //
-    //
+    // ---------------------------------------------------
     void draw_u(int step_,int startdeg_, int enddeg_){
         
 //        ofCircle(0,0, 5);
@@ -119,13 +112,11 @@ public:
         {
             kurveMesh[i].clear();
             
-        }
-        
-        
-
+        }       
     }
-
-    void draw_n(int step_,int startdeg_, int enddeg_){
+ 
+    // ---------------------------------------------------
+     void draw_n(int step_,int startdeg_, int enddeg_){
 
 //        ofCircle(0,0, 5);
 
@@ -167,14 +158,11 @@ public:
             kurveMesh[i].clear();
             
         }
-
     }
-
 };
 
 Kurve *kurve;
 ofEasyCam cam;
-
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -182,9 +170,7 @@ void ofApp::setup(){
     glPointSize(3.0);
 
     kurve = new Kurve;
-
-
-
+       
 }
 
 //--------------------------------------------------------------
@@ -198,8 +184,7 @@ void ofApp::draw(){
 //    cam.begin();
 
     ofPushMatrix();
-
-
+    
     ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 
     kurve->draw_u(2,0,180);
