@@ -20,7 +20,7 @@ public:
             //kurveMesh[i].setMode(OF_PRIMITIVE_POINTS);
         }
 
-        kurveWidth = 10;
+        kurveWidth = 20;
     }
 
     ~Kurve(){
@@ -132,6 +132,12 @@ public:
 
         ofVec3f drawPosition;
         float x,y;
+        float dx,dy;
+        
+        dx = 10 * kurveWidth * cos(ofDegToRad(enddeg_));
+        dy = 10 * kurveWidth * sin(ofDegToRad(enddeg_));
+       
+        *basePosition+=ofVec3f(dx,dy,0);
 
         for (int ideg = startdeg_ / step_; ideg >= enddeg_ / step_; ideg--)
         {
@@ -152,6 +158,8 @@ public:
                 kurveMesh[ipart].addVertex(drawPosition);
             }
         }
+
+        *basePosition+=ofVec3f(dx,dy,0);
 
         kurveMesh[1].draw();
         kurveMesh[2].draw();
@@ -230,15 +238,22 @@ void ofApp::draw(){
 
     ofVec3f basePositin;
 
-    basePositin.set(0,0,0);
+    basePositin.set(300,300,0);
 
     ofPushMatrix();
     ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 
-    kurve->draw_rt(&basePositin,5,90,270);
-    kurve->draw_Straight(&basePositin,5,100,0);
-    kurve->draw_lt(&basePositin,5,90,-90);
-
+    kurve->draw_rt(&basePositin,5,0,180);
+    kurve->draw_Straight(&basePositin,5,100,270);
+    kurve->draw_lt(&basePositin,5,0,-180);
+    kurve->draw_Straight(&basePositin,5,100,90);
+    kurve->draw_rt(&basePositin,5,0,180);
+    kurve->draw_Straight(&basePositin,5,500,270);
+    kurve->draw_rt(&basePositin,5,180,360);
+    kurve->draw_lt(&basePositin,5,180,0);
+    kurve->draw_rt(&basePositin,5,180,360);
+    kurve->draw_Straight(&basePositin,5,500,90);
+    
     //kurve->draw_u(&basePositin,5,0,180);
     //kurve->draw_Straight(&basePositin,5,100,270);
 
