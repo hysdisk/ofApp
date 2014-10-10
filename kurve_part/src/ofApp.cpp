@@ -20,8 +20,7 @@ public:
             //kurveMesh[i].setMode(OF_PRIMITIVE_POINTS);
         }
 
-        kurveWidth = 50;
-        position.set(ofGetWidth()/2,ofGetHeight()/2,0);
+        kurveWidth = 10;
     }
 
     ~Kurve(){
@@ -31,73 +30,84 @@ public:
 
     ofColor kurveColor[9];
     ofMesh  kurveMesh[9];
-    ofVec3f position;
     int   kurveDeg;
 
     int kurveWidth;
 
     enum Arrow{UP,RIGHT,DOWN,LEFT};
 
-   // ---------------------------------------------------
-     void draw_Straight(int step_,int distance_,int arrow_){
+    // -----------------------------------------------------------------------------
+    //  直線パーツ描画
+    //------------------------------------------------------------------------------
+    void draw_Straight(ofVec3f *basePosition,int step_,int distance_,int arrow_){
 
-//        ofCircle(0,0, 5);
-
-        ofVec3f location_;
-
-        location_.set(0,0,0);
+        ofVec3f drawPosition;
+        float sx,sy;
+        float wx,wy;
 
         for (int idist = 0; idist <= distance_ / step_; idist++)
         {
-            for (int ipart = 1; ipart < 8; ipart++)
-            {
-                //TODO : 進行方向判定
+            //step単位の移動量計算
+            sx = step_ * cos(ofDegToRad(arrow_));
+            sy = step_ * sin(ofDegToRad(arrow_));
 
-                location_.set(ipart * kurveWidth,idist * step_,0);
-                kurveMesh[ipart].addColor(kurveColor[ipart]);
-                kurveMesh[ipart].addVertex(location_);
+            //幅単位の移動量計算
+            wx = kurveWidth * cos(ofDegToRad(arrow_-90));
+            wy = kurveWidth * sin(ofDegToRad(arrow_-90));
 
-                location_.set(ipart * kurveWidth + kurveWidth,idist * step_,0);
+            //描画ポイントに基準ポイントをセット + 1幅分ずらしとく
+            drawPosition = *basePosition + ofVec3f(wx,wy,0);
+
+            *basePosition+=ofVec3f(sx,sy,0);
+            ofCircle(*basePosition,1);
+
+            for (int ipart = 1; ipart <= 8; ipart++)
+            {                
+                //内径位置算出
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
-                kurveMesh[ipart].addVertex(location_);
+                kurveMesh[ipart].addVertex(drawPosition);
+
+                //外径位置算出
+                drawPosition+=ofVec3f(wx,wy,0);
+                kurveMesh[ipart].addColor(kurveColor[ipart]);
+                kurveMesh[ipart].addVertex(drawPosition);
             }            
         }
+        *basePosition-=ofVec3f(sx,sy,0);
 
-        for (int i = 1 ; i < 8; i++)
+        for (int i = 1 ; i <= 8; i++)
         {
             kurveMesh[i].draw();
             kurveMesh[i].clear();
         }
     }
 
-    // ---------------------------------------------------
-    void draw_u(int step_,int startdeg_, int enddeg_){
-        
-//        ofCircle(0,0, 5);
+    // -----------------------------------------------------------------------------
+    //  曲線パーツ(右回り-->)描画
+    //------------------------------------------------------------------------------
+    void draw_rt(ofVec3f *basePosition,int step_,int startdeg_, int enddeg_){
 
-        ofVec3f location_;
-
-        //TODO : 回転方向判断
+        ofVec3f drawPosition;
+        float x,y;
 
         for (int ideg = startdeg_ / step_; ideg <= enddeg_ / step_; ideg++)
         {
+            x = kurveWidth * cos(ofDegToRad(ideg * step_));
+            y = kurveWidth * sin(ofDegToRad(ideg * step_));
+
+            drawPosition = *basePosition + ofVec3f(x,y,0);
+
             for (int ipart = 1; ipart <= 8; ipart++)
             {
                 //内径位置セット
-                location_.set(
-                    ipart * kurveWidth * cos(ofDegToRad(ideg * step_)),
-                    ipart * kurveWidth * sin(ofDegToRad(ideg * step_)),0);
-
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
-                kurveMesh[ipart].addVertex(location_);
+                kurveMesh[ipart].addVertex(drawPosition);
 
                 //外径位置セット
-                location_.set(
-                    (kurveWidth + (ipart * kurveWidth)) * cos(ofDegToRad(ideg * step_)),
-                    (kurveWidth + (ipart * kurveWidth)) * sin(ofDegToRad(ideg * step_)),0);
+                drawPosition+=ofVec3f(x,y,0);    
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
-                kurveMesh[ipart].addVertex(location_);
-            }            
+                kurveMesh[ipart].addVertex(drawPosition);
+            }
         }
 
         kurveMesh[1].draw();
@@ -108,41 +118,39 @@ public:
         kurveMesh[6].draw();
         kurveMesh[7].draw();
         kurveMesh[8].draw();
+
         for (int i = 1 ; i <= 8; i++)
         {
             kurveMesh[i].clear();
-            
         }       
     }
- 
-    // ---------------------------------------------------
-     void draw_n(int step_,int startdeg_, int enddeg_){
 
-//        ofCircle(0,0, 5);
+    // -----------------------------------------------------------------------------
+    //  曲線パーツ(左回り<--)描画
+    //------------------------------------------------------------------------------
+    void draw_lt(ofVec3f *basePosition,int step_,int startdeg_, int enddeg_){
 
-        ofVec3f location_;
+        ofVec3f drawPosition;
+        float x,y;
 
-        // 0 to -180を想定
         for (int ideg = startdeg_ / step_; ideg >= enddeg_ / step_; ideg--)
         {
+            x = kurveWidth * cos(ofDegToRad(ideg * step_));
+            y = kurveWidth * sin(ofDegToRad(ideg * step_));
+
+            drawPosition = *basePosition + ofVec3f(x,y,0);
+
             for (int ipart = 1; ipart <= 8; ipart++)
             {
-
                 //内径位置セット
-                location_.set(
-                    ipart * kurveWidth * cos(ofDegToRad(ideg * step_)),
-                    ipart * kurveWidth * sin(ofDegToRad(ideg * step_)),0);
-
                 kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
-                kurveMesh[ipart].addVertex(location_);
+                kurveMesh[ipart].addVertex(drawPosition);
 
                 //外径位置セット
-                location_.set(
-                    (kurveWidth + (ipart * kurveWidth)) * cos(ofDegToRad(ideg * step_)),
-                    (kurveWidth + (ipart * kurveWidth)) * sin(ofDegToRad(ideg * step_)),0);
+                drawPosition+=ofVec3f(x,y,0);    
                 kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
-                kurveMesh[ipart].addVertex(location_);
-            }            
+                kurveMesh[ipart].addVertex(drawPosition);
+            }
         }
 
         kurveMesh[1].draw();
@@ -153,12 +161,14 @@ public:
         kurveMesh[6].draw();
         kurveMesh[7].draw();
         kurveMesh[8].draw();
+
         for (int i = 1 ; i <= 8; i++)
         {
             kurveMesh[i].clear();
-            
+
         }
     }
+
 };
 
 Kurve *kurve;
@@ -170,40 +180,68 @@ void ofApp::setup(){
     glPointSize(3.0);
 
     kurve = new Kurve;
-       
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
 }
+void drawtest(){
+    float x,y;
+    float dx,dy;
+    int deg;
+    int width = 10;
+    int step;
 
+    ofVec3f gBasePotison,drawPosition1,drawPosition2;
+
+    deg = 36;
+    step = 10;
+    int sec = ofGetElapsedTimef() * 10;
+    sec %= 360;
+
+    ofCircle(0,0,5);
+
+    gBasePotison.set(0,0,0);
+
+
+    for (int i = 0; i < 100; i+=step)
+    {
+        x = step * cos(ofDegToRad(deg));
+        y = step * sin(ofDegToRad(deg));
+
+        gBasePotison  += ofVec3f(x,y,0);
+        drawPosition1 = gBasePotison;
+
+        for (int j = 1; j <= 8; j++)
+        {
+            dx = width * cos(ofDegToRad(deg-90));
+            dy = width * sin(ofDegToRad(deg-90));
+
+            drawPosition1 += ofVec3f(dx,dy,0);
+            drawPosition2 = drawPosition1 + ofVec3f(dx,dy,0);
+            ofLine(drawPosition1,drawPosition2);                        
+        }
+    }
+}
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-//    cam.begin();
+    ofVec3f basePositin;
+
+    basePositin.set(0,0,0);
 
     ofPushMatrix();
-    
     ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 
-    kurve->draw_u(2,0,180);
+    kurve->draw_rt(&basePositin,5,90,270);
+    kurve->draw_Straight(&basePositin,5,100,0);
+    kurve->draw_lt(&basePositin,5,90,-90);
 
-    ofTranslate(500,0,0);
-    kurve->draw_n(2,0,-180);
+    //kurve->draw_u(&basePositin,5,0,180);
+    //kurve->draw_Straight(&basePositin,5,100,270);
 
-    ofTranslate(500,0,0);
-    kurve->draw_u(2,0,180);
-    
-    ofTranslate(-1500,0,0);
-    kurve->draw_n(2,0,-180);
-
-    ofTranslate(-500,0,0);
-    kurve->draw_u(2,0,180);
-    
-    ofPopMatrix();
-
-//    cam.end();
 
 }
 
