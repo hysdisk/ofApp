@@ -45,7 +45,7 @@ public:
     enum Arrow{UP,RIGHT,DOWN,LEFT};
 
     // -----------------------------------------------------------------------------
-    //  íºê¸ÉpÅ[Écï`âÊ
+    //  直線パーツ描画
     //------------------------------------------------------------------------------
     void draw_Straight(ofVec3f *basePosition,int step_,int distance_,int arrow_){
 
@@ -55,15 +55,15 @@ public:
 
         for (int idist = 0; idist <= distance_ / step_; idist++)
         {
-            //stepíPà ÇÃà⁄ìÆó åvéZ
+            //step単位の移動量計算
             sx = step_ * cos(ofDegToRad(arrow_));
             sy = step_ * sin(ofDegToRad(arrow_));
 
-            //ïùíPà ÇÃà⁄ìÆó åvéZ
+            //幅単位の移動量計算
             wx = kurveWidth * cos(ofDegToRad(arrow_-90));
             wy = kurveWidth * sin(ofDegToRad(arrow_-90));
 
-            //ï`âÊÉ|ÉCÉìÉgÇ…äÓèÄÉ|ÉCÉìÉgÇÉZÉbÉg + 1ïùï™Ç∏ÇÁÇµÇ∆Ç≠
+            //描画ポイントに基準ポイントをセット + 1幅分ずらしとく
             drawPosition = *basePosition + ofVec3f(wx,wy,0);
 
             *basePosition+=ofVec3f(sx,sy,0);
@@ -71,11 +71,11 @@ public:
 
             for (int ipart = 1; ipart <= 8; ipart++)
             {                
-                //ì‡åaà íuéZèo
+                //内径位置算出
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
 
-                //äOåaà íuéZèo
+                //外径位置算出
                 drawPosition+=ofVec3f(wx,wy,0);
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
@@ -91,7 +91,7 @@ public:
     }
 
     // -----------------------------------------------------------------------------
-    //  ã»ê¸ÉpÅ[Éc(âEâÒÇË-->)ï`âÊ
+    //  曲線パーツ(右回り-->)描画
     //------------------------------------------------------------------------------
     void draw_rt(ofVec3f *basePosition,int step_,int startdeg_, int enddeg_){
 
@@ -107,11 +107,11 @@ public:
 
             for (int ipart = 1; ipart <= 8; ipart++)
             {
-                //ì‡åaà íuÉZÉbÉg
+                //内径位置算出
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
 
-                //äOåaà íuÉZÉbÉg
+                //外径位置算出
                 drawPosition+=ofVec3f(x,y,0);    
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
@@ -134,7 +134,7 @@ public:
     }
 
     // -----------------------------------------------------------------------------
-    //  ã»ê¸ÉpÅ[Éc(ç∂âÒÇË<--)ï`âÊ
+    //  曲線パーツ(左回り<--)描画
     //------------------------------------------------------------------------------
     void draw_lt(ofVec3f *basePosition,int step_,int startdeg_, int enddeg_){
 
@@ -156,11 +156,11 @@ public:
 
             for (int ipart = 1; ipart <= 8; ipart++)
             {
-                //ì‡åaà íuÉZÉbÉg
+                //内径位置セット
                 kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
                 kurveMesh[ipart].addVertex(drawPosition);
 
-                //äOåaà íuÉZÉbÉg
+                //外径位置セット
                 drawPosition+=ofVec3f(x,y,0);    
                 kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
                 kurveMesh[ipart].addVertex(drawPosition);
@@ -201,49 +201,70 @@ public:
         
         drawDeg = baseDeg+deg_;
 
+        //幅分ベクトル計算 進行方向に対して基準点から左方向(-90)に展開
         wx = kurveWidth * cos(ofDegToRad(drawDeg-90));
         wy = kurveWidth * sin(ofDegToRad(drawDeg-90));
         
+        //最外径ベクトル計算
         outx = 10 * kurveWidth * cos(ofDegToRad(drawDeg-90));
         outy = 10 * kurveWidth * sin(ofDegToRad(drawDeg-90));
         
+        //直進時 ----------------------------------------------------------
         if (drawDeg == baseDeg) {
+        
+            //直進速度分のベクトル計算
             sx = step_ * cos(ofDegToRad(drawDeg));
             sy = step_ * sin(ofDegToRad(drawDeg));
             
+            //基準ポイント更新
             basePosition+=ofVec3f(sx,sy,0);
+            
+            //最外径ポイント更新
             basePosition_out = basePosition + ofVec3f(outx,outy,0);
         }
         
+        //右回り時 ----------------------------------------------------------
         if (drawDeg > baseDeg) {
+        
+            //最外径ポイント更新
             basePosition_out = basePosition + ofVec3f(outx,outy,0);
+  
+            //基準角度更新
             baseDeg = drawDeg;
         }
         
+        //左回り時 ----------------------------------------------------------
         if (drawDeg < baseDeg) {
+        
+            //最外径ポイントから左回り用基準点を算出
             outx = 10 * kurveWidth * cos(ofDegToRad(drawDeg+90));
             outy = 10 * kurveWidth * sin(ofDegToRad(drawDeg+90));
             basePosition = basePosition_out + ofVec3f(outx,outy,0);
             
             baseDeg = drawDeg;
             
+            //幅分ベクトル計算 進行方向に対して右方向(+90)に展開
             wx = kurveWidth * cos(ofDegToRad(drawDeg+90));
             wy = kurveWidth * sin(ofDegToRad(drawDeg+90));
+            
+            //最外径から減算するために符号反転
             wx = -wx;
             wy = -wy;
         }
         
-        
+        //描画位置に基準ポイントをセット
         drawPosition = basePosition;
+        
+        //最内径分ずらす
         drawPosition+=ofVec3f(wx,wy,0);
         
         for (int ipart = 1; ipart <= 8; ipart++)
         {
-            //ì‡åaà íuéZèo
+            //内径位置セット
             kurveMesh[ipart].addColor(kurveColor[ipart]);
             kurveMesh[ipart].addVertex(drawPosition);
             
-            //äOåaà íuéZèo
+            //外径位置セット
             drawPosition+=ofVec3f(wx,wy,0);
             kurveMesh[ipart].addColor(kurveColor[ipart]);
             kurveMesh[ipart].addVertex(drawPosition);
