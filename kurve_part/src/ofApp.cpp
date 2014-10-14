@@ -17,10 +17,14 @@ public:
         for (int i = 1; i <= 8; i++)
         {
             kurveMesh[i].setMode(OF_PRIMITIVE_TRIANGLE_STRIP);
-            //kurveMesh[i].setMode(OF_PRIMITIVE_POINTS);
+//            kurveMesh[i].setMode(OF_PRIMITIVE_POINTS);
         }
 
         kurveWidth = 20;
+        
+        baseDeg = 0;
+        basePosition.set(0,0,0);
+        basePosition_out.set(0,0,0);
     }
 
     ~Kurve(){
@@ -31,13 +35,17 @@ public:
     ofColor kurveColor[9];
     ofMesh  kurveMesh[9];
     int   kurveDeg;
+    
+    ofVec3f basePosition;
+    ofVec3f basePosition_out;
+    int baseDeg;
 
     int kurveWidth;
 
     enum Arrow{UP,RIGHT,DOWN,LEFT};
 
     // -----------------------------------------------------------------------------
-    //  ’¼üƒp[ƒc•`‰æ
+    //  Ã­ÂºÃªÂ¸Ã‰pÃ…[Ã‰cÃ¯`Ã¢ÃŠ
     //------------------------------------------------------------------------------
     void draw_Straight(ofVec3f *basePosition,int step_,int distance_,int arrow_){
 
@@ -47,15 +55,15 @@ public:
 
         for (int idist = 0; idist <= distance_ / step_; idist++)
         {
-            //step’PˆÊ‚ÌˆÚ“®—ÊŒvŽZ
+            //stepÃ­PÃ Â Ã‡ÃƒÃ â„Ã¬Ã†Ã³Â Ã¥vÃ©Z
             sx = step_ * cos(ofDegToRad(arrow_));
             sy = step_ * sin(ofDegToRad(arrow_));
 
-            //•’PˆÊ‚ÌˆÚ“®—ÊŒvŽZ
+            //Ã¯Ã¹Ã­PÃ Â Ã‡ÃƒÃ â„Ã¬Ã†Ã³Â Ã¥vÃ©Z
             wx = kurveWidth * cos(ofDegToRad(arrow_-90));
             wy = kurveWidth * sin(ofDegToRad(arrow_-90));
 
-            //•`‰æƒ|ƒCƒ“ƒg‚ÉŠî€ƒ|ƒCƒ“ƒg‚ðƒZƒbƒg + 1••ª‚¸‚ç‚µ‚Æ‚­
+            //Ã¯`Ã¢ÃŠÃ‰|Ã‰CÃ‰Ã¬Ã‰gÃ‡â€¦Ã¤Ã“Ã¨Ã„Ã‰|Ã‰CÃ‰Ã¬Ã‰gÃ‡ï£¿Ã‰ZÃ‰bÃ‰g + 1Ã¯Ã¹Ã¯â„¢Ã‡âˆÃ‡ÃÃ‡ÂµÃ‡âˆ†Ã‡â‰ 
             drawPosition = *basePosition + ofVec3f(wx,wy,0);
 
             *basePosition+=ofVec3f(sx,sy,0);
@@ -63,11 +71,11 @@ public:
 
             for (int ipart = 1; ipart <= 8; ipart++)
             {                
-                //“àŒaˆÊ’uŽZo
+                //Ã¬â€¡Ã¥aÃ Â Ã­uÃ©ZÃ¨o
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
 
-                //ŠOŒaˆÊ’uŽZo
+                //Ã¤OÃ¥aÃ Â Ã­uÃ©ZÃ¨o
                 drawPosition+=ofVec3f(wx,wy,0);
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
@@ -83,7 +91,7 @@ public:
     }
 
     // -----------------------------------------------------------------------------
-    //  ‹Èüƒp[ƒc(‰E‰ñ‚è-->)•`‰æ
+    //  Ã£Â»ÃªÂ¸Ã‰pÃ…[Ã‰c(Ã¢EÃ¢Ã’Ã‡Ã‹-->)Ã¯`Ã¢ÃŠ
     //------------------------------------------------------------------------------
     void draw_rt(ofVec3f *basePosition,int step_,int startdeg_, int enddeg_){
 
@@ -99,11 +107,11 @@ public:
 
             for (int ipart = 1; ipart <= 8; ipart++)
             {
-                //“àŒaˆÊ’uƒZƒbƒg
+                //Ã¬â€¡Ã¥aÃ Â Ã­uÃ‰ZÃ‰bÃ‰g
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
 
-                //ŠOŒaˆÊ’uƒZƒbƒg
+                //Ã¤OÃ¥aÃ Â Ã­uÃ‰ZÃ‰bÃ‰g
                 drawPosition+=ofVec3f(x,y,0);    
                 kurveMesh[ipart].addColor(kurveColor[ipart]);
                 kurveMesh[ipart].addVertex(drawPosition);
@@ -126,7 +134,7 @@ public:
     }
 
     // -----------------------------------------------------------------------------
-    //  ‹Èüƒp[ƒc(¶‰ñ‚è<--)•`‰æ
+    //  Ã£Â»ÃªÂ¸Ã‰pÃ…[Ã‰c(Ã§âˆ‚Ã¢Ã’Ã‡Ã‹<--)Ã¯`Ã¢ÃŠ
     //------------------------------------------------------------------------------
     void draw_lt(ofVec3f *basePosition,int step_,int startdeg_, int enddeg_){
 
@@ -148,11 +156,11 @@ public:
 
             for (int ipart = 1; ipart <= 8; ipart++)
             {
-                //“àŒaˆÊ’uƒZƒbƒg
+                //Ã¬â€¡Ã¥aÃ Â Ã­uÃ‰ZÃ‰bÃ‰g
                 kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
                 kurveMesh[ipart].addVertex(drawPosition);
 
-                //ŠOŒaˆÊ’uƒZƒbƒg
+                //Ã¤OÃ¥aÃ Â Ã­uÃ‰ZÃ‰bÃ‰g
                 drawPosition+=ofVec3f(x,y,0);    
                 kurveMesh[ipart].addColor(kurveColor[-(ipart-9)]);
                 kurveMesh[ipart].addVertex(drawPosition);
@@ -175,6 +183,98 @@ public:
             kurveMesh[i].clear();
 
         }
+        ofCircle(*basePosition, 5);
+    }
+    
+    // -----------------------------------------------------------------------------
+    //
+    // -----------------------------------------------------------------------------
+    void add_vertex(int step_,int deg_){
+        
+        ofVec3f drawPosition;
+        ofVec3f tempPosition;
+        
+        int drawDeg;
+        float sx,sy;
+        float wx,wy;
+        float outx,outy;
+        
+        drawDeg = baseDeg+deg_;
+
+        wx = kurveWidth * cos(ofDegToRad(drawDeg-90));
+        wy = kurveWidth * sin(ofDegToRad(drawDeg-90));
+        
+        outx = 10 * kurveWidth * cos(ofDegToRad(drawDeg-90));
+        outy = 10 * kurveWidth * sin(ofDegToRad(drawDeg-90));
+        
+        if (drawDeg == baseDeg) {
+            sx = step_ * cos(ofDegToRad(drawDeg));
+            sy = step_ * sin(ofDegToRad(drawDeg));
+            
+            basePosition+=ofVec3f(sx,sy,0);
+            basePosition_out = basePosition + ofVec3f(outx,outy,0);
+        }
+        
+        if (drawDeg > baseDeg) {
+            basePosition_out = basePosition + ofVec3f(outx,outy,0);
+            baseDeg = drawDeg;
+        }
+        
+        if (drawDeg < baseDeg) {
+            outx = 10 * kurveWidth * cos(ofDegToRad(drawDeg+90));
+            outy = 10 * kurveWidth * sin(ofDegToRad(drawDeg+90));
+            basePosition = basePosition_out + ofVec3f(outx,outy,0);
+            
+            baseDeg = drawDeg;
+            
+            wx = kurveWidth * cos(ofDegToRad(drawDeg+90));
+            wy = kurveWidth * sin(ofDegToRad(drawDeg+90));
+            wx = -wx;
+            wy = -wy;
+        }
+        
+        
+        drawPosition = basePosition;
+        drawPosition+=ofVec3f(wx,wy,0);
+        
+        for (int ipart = 1; ipart <= 8; ipart++)
+        {
+            //Ã¬â€¡Ã¥aÃ Â Ã­uÃ©ZÃ¨o
+            kurveMesh[ipart].addColor(kurveColor[ipart]);
+            kurveMesh[ipart].addVertex(drawPosition);
+            
+            //Ã¤OÃ¥aÃ Â Ã­uÃ©ZÃ¨o
+            drawPosition+=ofVec3f(wx,wy,0);
+            kurveMesh[ipart].addColor(kurveColor[ipart]);
+            kurveMesh[ipart].addVertex(drawPosition);
+        }
+    
+    }
+    
+    void draw(){
+        
+        ofSetColor(ofColor::white);
+        ofCircle(basePosition, 2);
+        ofSetColor(ofColor::red);
+        ofCircle(basePosition_out, 2);
+        
+        kurveMesh[1].draw();
+        kurveMesh[2].draw();
+        kurveMesh[3].draw();
+        kurveMesh[4].draw();
+        kurveMesh[5].draw();
+        kurveMesh[6].draw();
+        kurveMesh[7].draw();
+        kurveMesh[8].draw();
+        
+        ofDrawBitmapString(ofToString(baseDeg), 0,0);
+
+    }
+    
+    void clear(){
+        for (int i = 1; i <= 8; i++) {
+            kurveMesh[i].clear();
+        }
     }
 
 };
@@ -185,7 +285,7 @@ ofEasyCam cam;
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofBackground(ofColor(61,44,78));
-    glPointSize(3.0);
+    glPointSize(10.0);
 
     kurve = new Kurve;
 
@@ -195,74 +295,33 @@ void ofApp::setup(){
 void ofApp::update(){
 
 }
-void drawtest(){
-    float x,y;
-    float dx,dy;
-    int deg;
-    int width = 10;
-    int step;
 
-    ofVec3f gBasePotison,drawPosition1,drawPosition2;
-
-    deg = 36;
-    step = 10;
-    int sec = ofGetElapsedTimef() * 10;
-    sec %= 360;
-
-    ofCircle(0,0,5);
-
-    gBasePotison.set(0,0,0);
-
-
-    for (int i = 0; i < 100; i+=step)
-    {
-        x = step * cos(ofDegToRad(deg));
-        y = step * sin(ofDegToRad(deg));
-
-        gBasePotison  += ofVec3f(x,y,0);
-        drawPosition1 = gBasePotison;
-
-        for (int j = 1; j <= 8; j++)
-        {
-            dx = width * cos(ofDegToRad(deg-90));
-            dy = width * sin(ofDegToRad(deg-90));
-
-            drawPosition1 += ofVec3f(dx,dy,0);
-            drawPosition2 = drawPosition1 + ofVec3f(dx,dy,0);
-            ofLine(drawPosition1,drawPosition2);                        
-        }
-    }
-}
 //--------------------------------------------------------------
 void ofApp::draw(){
-
-    ofVec3f basePositin;
-
-    basePositin.set(300,300,0);
-
-    ofPushMatrix();
-    ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
-
-    kurve->draw_rt(&basePositin,5,0,180);
-    kurve->draw_Straight(&basePositin,5,100,270);
-    kurve->draw_lt(&basePositin,5,0,-180);
-    kurve->draw_Straight(&basePositin,5,100,90);
-    kurve->draw_rt(&basePositin,5,0,180);
-    kurve->draw_Straight(&basePositin,5,500,270);
-    kurve->draw_rt(&basePositin,5,180,360);
-    kurve->draw_lt(&basePositin,5,180,0);
-    kurve->draw_rt(&basePositin,5,180,360);
-    kurve->draw_Straight(&basePositin,5,500,90);
     
-    //kurve->draw_u(&basePositin,5,0,180);
-    //kurve->draw_Straight(&basePositin,5,100,270);
+    ofPushMatrix();
+    ofTranslate(mouseX,mouseY);
+    kurve->draw();
+    ofPopMatrix();
+
 
 
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    if (key==OF_KEY_UP) {
+        kurve->add_vertex(5, 0);
+    }
+    if (key==OF_KEY_RIGHT) {
+        kurve->add_vertex(5, 5);
+    }
+    if (key==OF_KEY_LEFT) {
+        kurve->add_vertex(5, -5);
+    }
+    if (key=='c'){
+        kurve->clear();
+    }
 }
 
 //--------------------------------------------------------------
