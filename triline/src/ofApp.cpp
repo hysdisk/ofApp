@@ -4,9 +4,11 @@ int g_count;
 float g_scale_start;
 float g_scale_end;
 float g_r_poly;
+int g_rotate_poly;
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofSetFrameRate(60);
     ofBackground(0);
     ofRectMode(OF_RECTMODE_CENTER);
     ofSetCircleResolution(64);
@@ -16,15 +18,17 @@ void ofApp::setup(){
     g_r_poly      = 100;
     g_scale_start = 0;
     g_scale_end   = 1;
+    g_rotate_poly = 90;
 
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
+    g_rotate_poly++;
+    g_rotate_poly%=360;
 }
 
-void draw_burr_polygon(int poly,float r_poly,float s_scale,float e_scale){
+void draw_burr_polygon(int poly,float r_poly,float s_scale,float e_scale,int rotate_poly){
 
 #define POLY_MAX 37
 
@@ -35,7 +39,6 @@ void draw_burr_polygon(int poly,float r_poly,float s_scale,float e_scale){
     float deg[POLY_MAX],dist[POLY_MAX];
     int deg_split;
 
-    r_poly = 100;
     vp[0].set(0,0);
 
     deg_split = 360 / poly;
@@ -43,8 +46,8 @@ void draw_burr_polygon(int poly,float r_poly,float s_scale,float e_scale){
     for (int ipoly = 1; ipoly <= poly; ipoly++)
     {
         //基準頂点算出
-        x = r_poly * cos(ofDegToRad( (ipoly -1) * deg_split ));
-        y = r_poly * sin(ofDegToRad( (ipoly -1) * deg_split ));
+        x = r_poly * cos(ofDegToRad( ((ipoly -1) * deg_split ) + rotate_poly) );
+        y = r_poly * sin(ofDegToRad( ((ipoly -1) * deg_split ) + rotate_poly) );
         vp[ipoly].set(x,y);
     }
 
@@ -87,9 +90,11 @@ void ofApp::draw(){
     ofTranslate(ofGetWidth()/2,ofGetHeight()/2);
 
     //draw_burr_polygon(g_count,g_scale_start,g_scale_end);
-    draw_burr_polygon(g_count,0.1,0.9);
+    draw_burr_polygon(g_count,g_r_poly,0.1,0.9,g_rotate_poly);
 
     ofPopMatrix();    
+
+    ofDrawBitmapString(ofToString(g_r_poly),10,10);
 }
 
 //--------------------------------------------------------------
