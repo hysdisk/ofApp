@@ -55,7 +55,6 @@ public:
         ofPopMatrix();
 
         update();
-
     }
 
     //----------------------------------------
@@ -73,17 +72,12 @@ public:
     float get_rotate_deg(){return rotate_deg;}
 
     void update(){
-
-        if (ofRandom(0,1) > 0.99)
-        {
-            is_clockwork = 1 - is_clockwork;
-        }
-
+        if (ofRandom(0,1) > 0.99){is_clockwork = 1 - is_clockwork;}
     }
 
 private:
 
-    ofMesh mesh;
+    ofMesh mesh;        //ringメッシュ
 
     ofVec3f pos;        //中心座標
     float radius;       //半径
@@ -92,13 +86,42 @@ private:
     int deg_end;        //リング終了角度
     float rotate_speed; //回転速度
     float rotate_deg;   //リング回転角度
-    int is_clockwork;  //時計回り？(0:true 1:false)
+    int is_clockwork;   //時計回り？(0:true 1:false)
 
     ofColor color;
 
 };
 
-ConsoleRing rings[10];
+#define MAX_RING_COUNT 30
+
+ConsoleRing rings[MAX_RING_COUNT];
+int ring_count;
+
+//-----------------------------------------------------------
+// リング初期化
+//-----------------------------------------------------------
+void init_ring(ofVec3f pos_){
+
+    float t_width;
+
+    float t_radius = 50;
+    int min_width = 1;
+    int max_width = 10;
+    float min_speed = 0;
+    float max_speed = 3;
+
+    for (int i = 0; i < ring_count; i++)
+    {
+        rings[i].set_pos(ofVec3f(pos_));
+        t_width = ofRandom(min_width,max_width);
+        rings[i].set_width(t_width);
+        rings[i].set_radius(t_radius);
+        t_radius += t_width + 1;
+        rings[i].set_rotate_speed(ofRandom(min_speed,max_speed));
+        rings[i].set_deg_end(ofRandom(180,360));
+        rings[i].make_ring();
+    }
+}
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -107,21 +130,9 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofBackground(0);
 
-    float t_width;
-    float t_radius;
+    ring_count = 10;
 
-    t_radius = 100;
-    for (int i = 0; i < 10; i++)
-    {
-        rings[i].set_pos(ofVec3f(ofGetWidth() / 2 ,ofGetHeight() / 2,0));
-        t_width = ofRandom(1,30);
-        rings[i].set_width(t_width);
-        rings[i].set_radius(t_radius);
-        t_radius += t_width + 1;
-        rings[i].set_rotate_speed(ofRandom(0,3));
-        rings[i].set_deg_end(ofRandom(180,360));
-        rings[i].make_ring();
-    }
+    init_ring(ofVec3f(ofGetWidth() / 2 ,ofGetHeight() / 2,0));
 }
 
 //--------------------------------------------------------------
@@ -132,7 +143,7 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-    for (int i = 0; i < 10; i++)
+    for (int i = 0; i < ring_count; i++)
     {
         rings[i].draw();
 
@@ -146,21 +157,11 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
 
-    float t_width;
-    float t_radius;
+    if (key==OF_KEY_UP){ ring_count++;}
+    if (key==OF_KEY_DOWN){ ring_count--;}
 
-    t_radius = ofRandom(50,100);
-    for (int i = 0; i < 10; i++)
-    {
-        rings[i].set_pos(ofVec3f(ofGetWidth() / 2 ,ofGetHeight() / 2,0));
-        t_width = ofRandom(1,30);
-        rings[i].set_width(t_width);
-        rings[i].set_radius(t_radius);
-        t_radius += t_width + 1;
-        rings[i].set_rotate_speed(ofRandom(0,5));
-        rings[i].set_deg_end(ofRandom(180,360));
-        rings[i].make_ring();
-    }
+    ring_count = ofClamp(ring_count,1,MAX_RING_COUNT - 1);
+    init_ring(ofVec3f(mouseX,mouseY,0));
 }
 
 //--------------------------------------------------------------
