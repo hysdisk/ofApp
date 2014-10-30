@@ -1,6 +1,5 @@
 ﻿#include "ofApp.h"
 
-
 class ConsoleRing
 {
 public:
@@ -14,7 +13,7 @@ public:
         rotate_speed = 3;
         rotate_deg = 0;
         is_clockwork = true;
-        color.set(255,255,255);
+        color.set(0,255,0);
     }
     ~ConsoleRing(){}
 
@@ -64,6 +63,7 @@ public:
     void set_rotate_speed(float rotate_speed_){rotate_speed = rotate_speed_;}
     void set_deg_start(int deg_start_){deg_start = deg_start_;}
     void set_deg_end(int deg_end_){deg_end = deg_end_;}
+    void set_color(ofColor color_){color = color_;}
 
     //----------------------------------------
     float get_radius(){return radius;}
@@ -102,7 +102,8 @@ int ring_count;
 //-----------------------------------------------------------
 void init_ring(ofVec3f pos_){
 
-    float t_width;
+    float width;
+    float speed;
 
     float t_radius = 50;
     int min_width = 1;
@@ -112,13 +113,16 @@ void init_ring(ofVec3f pos_){
 
     for (int i = 0; i < ring_count; i++)
     {
+        width = ofRandom(min_width,max_width);
+        speed = ofRandom(min_speed,max_speed);
+
         rings[i].set_pos(ofVec3f(pos_));
-        t_width = ofRandom(min_width,max_width);
-        rings[i].set_width(t_width);
+        rings[i].set_width(width);
         rings[i].set_radius(t_radius);
-        t_radius += t_width + 1;
-        rings[i].set_rotate_speed(ofRandom(min_speed,max_speed));
+        t_radius += width + 1;
+        rings[i].set_rotate_speed(speed);
         rings[i].set_deg_end(ofRandom(180,360));
+        rings[i].set_color(ofColor::fromHsb(ofMap(speed,min_speed,max_speed,0,255),255,255));
         rings[i].make_ring();
     }
 }
@@ -147,9 +151,6 @@ void ofApp::draw(){
     {
         rings[i].draw();
 
-        ofDrawBitmapString(ofToString(rings[i].get_radius(),1),10,i * 15);
-        ofDrawBitmapString(ofToString(rings[i].get_width(),1),100,i * 15);
-        ofDrawBitmapString(ofToString(rings[i].get_rotate_deg(),1),200,i * 15);
     }
 
 }
