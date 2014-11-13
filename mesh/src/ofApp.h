@@ -20,7 +20,12 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
+        ofEasyCam cam;
+
         Particle *part;
         vector<Particle *> parts;
+
+        void alignment_circle();
+        void alignment_box(int start_cnt_,float x_,float y_);
 		
 };

@@ -9,14 +9,16 @@ public:
     ofVec3f velocity;
     ofVec3f dest;
     ofColor color;
+    ofVboMesh mesh;
     float radius;
     float speed;
 
     Particle(){
         velocity.set(0,0,0);
-        radius = 10;
-        speed = 1;
-        color.set(64,64,255,128);
+        force.set(0,0,0);
+        radius = 1;
+        speed = 2;
+        color.set(255,255,255,255);
     }
 
     ~Particle(){}
@@ -59,10 +61,16 @@ public:
 
     void set_velocity_dest(){
         ofVec3f diff;
-        diff = dest - pos;
-        diff.normalize();
-        velocity = diff;
+
+        if (dest.length() != 0)
+        {
+            diff = dest - pos;
+            velocity = diff.normalized() * speed;
+            if (diff.length() < 1){velocity.set(0,0,0);}
+        }
+
     }
+
 
     void add_force(ofVec3f force_){
     }
@@ -71,7 +79,7 @@ public:
     }
 
     void update_pos(){
-        pos += (velocity * speed);
+        pos += velocity + force;
     }
 
     void update_force(){
@@ -86,15 +94,18 @@ public:
     }
 
     void draw(){
-        ofSetColor(color);
-        ofCircle(pos,radius);
+                
+        ofRotateY(5);
+
+        //ofSetColor(color);
+        //ofCircle(pos,radius);
+
+        ofNoFill();
+        ofRect(pos,10,10);
+        ofFill();
     }
-
-
-
-
+    
 private:
-
-
+    
 };
 
