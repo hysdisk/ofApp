@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "ofMain.h"
 
 class Particle{
@@ -6,27 +6,35 @@ class Particle{
 public:
 
     ofPoint pos;
-    ofPoint accel;
-    ofMesh mesh;
+    ofPoint velocity;
+    ofPoint direction;
+    ofPoint desire;
+    ofMesh  mesh;
     ofColor color;
 
     int p_num;
     int radius;
     float deg;
     float deg_speed;
+    float force;
+    bool isDead;
 
     enum draw_mode{POINT,TRIANGLE,RECT};
 
     //--------------------------------------------------------------
     Particle(ofPoint pos_){
         pos       = pos_;
-        p_num     = 6;
+        desire    = pos;
+        p_num     = 4;
         radius    = 10;
-        deg       = 0;
+        deg       = 45;
         deg_speed = 0;
-        accel.set(0,0,0);
+        force     = 3.0;
+        isDead    = false;
+        velocity.set(0,0,0);
         color.set(255,255,255,64);
     }
+
     //--------------------------------------------------------------
     ~Particle(){}
 
@@ -83,19 +91,47 @@ public:
 
     //--------------------------------------------------------------
     void update_deg(){
-
         deg+=deg_speed;
     }
 
     //--------------------------------------------------------------
+    void update_deg(int x_,int y_){
+
+        float dist;
+
+        dist = x_ - pos.x;
+        deg_speed = ofMap(dist,-(ofGetWidth()/2),(ofGetWidth()/2),-10,10);
+        deg+=deg_speed;
+    }
+
+    //--------------------------------------------------------------
+    void update_direction(){
+
+        ofPoint diff;
+
+        diff = desire - pos;
+        direction = diff.normalized();
+        if (diff.length() <= 1){direction.set(0,0,0);}
+    }
+
+    //--------------------------------------------------------------
+    void update_force(){
+
+    }
+
+    //--------------------------------------------------------------
+    void update_velocity(){
+        velocity = direction * force;
+    }
+    
+    //--------------------------------------------------------------
     void update_pos(){
-        pos += accel;
+        update_force();
+        update_direction();
+        update_velocity();
 
-        if (pos.x > ofGetWidth()){accel.x*=-1;}
-        if (pos.x < 0){accel.x*=-1;}
-        if (pos.y > ofGetHeight()){accel.y*=-1;}
-        if (pos.y < 0){accel.y*=-1;}
-
+        pos += velocity;
+        check_pos_bounds();
     }
 
     //--------------------------------------------------------------
@@ -113,4 +149,13 @@ public:
             ofFill();
         }ofPopMatrix();
     }
+
+    //--------------------------------------------------------------
+    void check_pos_bounds(){
+        if (pos.x > ofGetWidth()){velocity.x*=-1;}
+        if (pos.x < 0){velocity.x*=-1;}
+        if (pos.y > ofGetHeight()){velocity.y*=-1;}
+        if (pos.y < 0){velocity.y*=-1;}
+    }
+
 };
