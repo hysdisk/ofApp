@@ -51,8 +51,13 @@ public:
 
     }
 
-    void update(){
+    void update_deg(){
         rotate_deg+=rotate_speed;
+    }
+
+    void update(){
+        update_deg();
+        
     }
 
     void draw(){

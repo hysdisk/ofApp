@@ -12,14 +12,21 @@ public:
     ofMesh  mesh;
     ofColor color;
 
+    int number;
     int p_num;
     int radius;
     float deg;
     float deg_speed;
+    float direction_speed;
     float force;
     bool isDead;
+    bool isMove;
 
-    enum draw_mode{POINT,TRIANGLE,RECT};
+    int d_mode;
+    int m_mode;
+
+    enum draw_mode{POINT,CIRCLE,RECT,MESH};
+    enum move_mode{LINEAR,ATTRACT,DISTRACT };
 
     //--------------------------------------------------------------
     Particle(ofPoint pos_){
@@ -29,10 +36,14 @@ public:
         radius    = 10;
         deg       = 45;
         deg_speed = 0;
-        force     = 3.0;
+        direction_speed = 1.0;
+        force     = 0.95;
         isDead    = false;
+        isMove    = false;
+        d_mode = CIRCLE;
+        m_mode = ATTRACT;
         velocity.set(0,0,0);
-        color.set(255,255,255,64);
+        color.set(255,255,255,255);
     }
 
     //--------------------------------------------------------------
@@ -112,6 +123,7 @@ public:
         diff = desire - pos;
         direction = diff.normalized();
         if (diff.length() <= 1){direction.set(0,0,0);}
+        direction *= direction_speed;
     }
 
     //--------------------------------------------------------------
@@ -121,32 +133,74 @@ public:
 
     //--------------------------------------------------------------
     void update_velocity(){
-        velocity = direction * force;
+
+        switch (m_mode)
+        {
+        case Particle::LINEAR:
+            velocity *= force;
+            break;
+        case Particle::ATTRACT:
+            update_force();
+            update_direction();
+            velocity = direction * force;
+            break;
+        case Particle::DISTRACT:
+            update_force();
+            update_direction();
+            velocity = -(direction * force);
+            break;
+        default:
+            break;
+        }
+
+        isMove = (velocity.length()==0) ? false : true;
     }
-    
+
     //--------------------------------------------------------------
     void update_pos(){
-        update_force();
-        update_direction();
-        update_velocity();
 
+        update_velocity();
         pos += velocity;
         check_pos_bounds();
     }
 
     //--------------------------------------------------------------
     void draw(){
-        //mesh.drawWireframe();
-        //path.draw();
 
         ofPushMatrix();{
             ofTranslate(pos);
-            ofSetCircleResolution(p_num);
-            ofRotate(deg);
-            //ofNoFill();
-            ofSetColor(color);
-            ofCircle(0,0,0,radius);
-            ofFill();
+
+
+            switch (d_mode)
+            {
+            case Particle::POINT:
+                ofSetCircleResolution(3);
+                ofFill();
+                ofSetColor(color);
+                ofCircle(0,0,0,1);
+            case Particle::CIRCLE:
+                ofSetCircleResolution(p_num);
+                ofRotate(deg);
+                ofNoFill();
+                ofSetColor(color);
+                ofCircle(0,0,0,radius);
+                ofFill();
+                ofDrawBitmapString(ofToString(number),0,0);
+                break;
+            case Particle::RECT:
+                ofRotate(deg);
+                ofNoFill();
+                ofSetColor(color);
+                ofRect(0,0,0,radius);
+                ofFill();
+                break;
+            case Particle::MESH:
+                mesh.draw();
+                break;
+            default:
+                break;
+            }
+
         }ofPopMatrix();
     }
 
