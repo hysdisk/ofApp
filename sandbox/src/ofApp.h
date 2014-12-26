@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
+
 class d2Triangle : public ofBaseApp{
 
 public:
@@ -374,11 +376,19 @@ class ofApp : public ofBaseApp{
 
         ofMesh mesh;
         ofEasyCam cam;
+        bool isCam;
         ofLight light;
         ofImage myimage;
 
         vector<ofVec3f> vpos;
 
+        ofxPanel gui;
+        ofxFloatColorSlider lightcolor;
+        ofxFloatSlider camFov;
+        ofxFloatSlider camDist;
+        ofxVec3Slider camPos;
+        bool isGui;
+   
 		void setup();
 		void update();
 		void draw();
@@ -392,5 +402,9 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
+        void lsn_camFov(float & camFov);
+        void lsn_camDist(float & camDist);
+        void lsn_camPos(ofVec3f & camPos);
 		
 };

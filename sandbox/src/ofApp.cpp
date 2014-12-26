@@ -6,65 +6,72 @@ void ofApp::setup(){
     w = ofGetWidth();
     h = ofGetHeight();
 
-    ofSetCoordHandedness(OF_RIGHT_HANDED);
+    //ofSetCoordHandedness(OF_RIGHT_HANDED);
     ofScale(1,-1,1);
-    ofTranslate(w/2,h/2);
-
     ofSetFrameRate(60);
-    ofEnableDepthTest();
 
     ofBackground(ofColor::white);
 
+    //lighting 
     light.enable();
     light.setPosition(1000, 1000, 2000);
+
     /*
     light.setSpotlight();
-    light.setAmbientColor(ofFloatColor(1,1,1,1));
-    light.setDiffuseColor(ofFloatColor(1,1,1,1));
-
+    light.setAmbientColor(ofFloatColor(0.5,0.5,0.5));   
+    light.setDiffuseColor(ofFloatColor(1,1,1,1));    
     */
-    mesh = ofMesh::icosphere(300,3);
-    mesh.mergeDuplicateVertices();
 
-    for (int i = 0; i < mesh.getNumVertices(); i++)
-    {
-        vpos.push_back(mesh.getVertex(i));
-    }
+    //gui用リスナー定義
+    camFov.addListener(this, &ofApp::lsn_camFov);
+    camDist.addListener(this, &ofApp::lsn_camDist);
 
-    mesh = ofMesh::sphere(25,2);
- 
+    //gui設定
+    gui.setup();
+    gui.add(camFov.setup("camera fov",80.0,0.0,180.0));
+    gui.add(camDist.setup("camera dist",500.0,0.0,1000.0));
+    gui.add(camPos.setup("camera pos",ofVec3f(0,0,0),ofVec3f(-w/2,-h/2,-500),ofVec3f(w/2,h/2,500)));
+    isGui = true;
+
+    //easycam設定
+    cam.setFov(80);
+    cam.setDistance(500);
+    isCam = true;
+
+    //SandBox SetUp
+
 }
+
+void ofApp::lsn_camFov(float & camFov){cam.setFov(camFov);}
+void ofApp::lsn_camDist(float & camDist){cam.setDistance(camDist);}
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-    cam.begin();{
+    if(isCam){cam.begin();}
 
-        for (int i = 0; i < vpos.size(); i++)
-        {
-            ofPushMatrix();{
+    ofPushMatrix();{
 
-                ofTranslate(vpos[i]);
+        ofTranslate(w/2,h/2);
 
-                ofSetColor(ofColor::fromHsb(ofMap(i,0,vpos.size(),0,255),255,255,255));
-                //mesh.draw();
-
-                //ofSetColor(255);
-                ////glLineWidth(3);
-                //mesh.drawWireframe();
-
-                ofCircle(0,0,0,30);
-
-            }ofPopMatrix();
-        }
-
+        ofSetColor(0);
+        ofTriangle(ofVec3f(0,100,0),ofVec3f(100,-100,0),ofVec3f(-100,-100,0));
         ofDrawAxis(100);
-    }cam.end();
+        //ofDrawGrid(100);
+
+    }ofPopMatrix();
+
+    if(isCam){cam.end();}
+
+    if(isGui){
+        ofDisableDepthTest();
+        gui.draw();
+        ofEnableDepthTest();
+    }
 
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
@@ -78,6 +85,12 @@ void ofApp::keyPressed(int key){
     }
 
     if (key=='r'){cam.reset();}
+
+    if (key=='p'){cam.setPosition(camPos);}
+
+    if (key=='g'){isGui = !isGui;}
+    if (key=='c'){isCam = !isCam;}
+
 }
 
 //--------------------------------------------------------------
@@ -119,3 +132,4 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+
